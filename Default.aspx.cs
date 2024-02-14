@@ -29,7 +29,7 @@ namespace _14FebbraioEs
                 {
                     while (rdr.Read())
                     {
-                        displayData +=  $"<li>Sala: {rdr["Sala"]}, Tipo biglietto: {rdr["TipoBiglietto"]},Quantità {rdr["Num"]}</li>" ;
+                        displayData +=  $"<li>Sala: {rdr["Sala"]}, Tipo biglietto: {rdr["TipoBiglietto"]}, Quantità {rdr["Num"]}</li>" ;
                     }
                     prenotazioni.InnerHtml = displayData;
                 }
@@ -63,16 +63,37 @@ namespace _14FebbraioEs
 
                 int affetctedRow = cmdInsert.ExecuteNonQuery();
 
-                if (affetctedRow != 0)
-                {
-                    Response.Write("Ok");
-                }
+                
 
 
             }
             catch
             {
                 Response.Write("Not ok");
+            }
+            finally { conn.Close(); }
+            try
+            {
+                conn.Open();
+
+                //stampare
+                SqlCommand cmdSelect = new SqlCommand("SELECT Sala, TipoBiglietto, COUNT(*) AS Num FROM Tabella group by sala, TipoBiglietto", conn);
+                SqlDataReader rdr = cmdSelect.ExecuteReader();
+
+                string displayData = "";
+                if (rdr.HasRows)
+                {
+                    while (rdr.Read())
+                    {
+                        displayData += $"<li>Sala: {rdr["Sala"]}, Tipo biglietto: {rdr["TipoBiglietto"]}, Quantità {rdr["Num"]}</li>";
+                    }
+                    prenotazioni.InnerHtml = displayData;
+                }
+
+            }
+            catch
+            {
+                Response.Write("Not ok2");
             }
             finally { conn.Close(); }
         }
